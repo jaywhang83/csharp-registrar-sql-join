@@ -85,6 +85,40 @@ namespace Registrar
       return allCourses;
     }
 
+    public void Save()
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO courses (name, course_number) OUTPUT INSERTED.id VALUES (@CourseName, @CourseNumber);", conn);
+
+      SqlParameter nameParameter = new SqlParameter();
+      nameParameter.ParameterName = "@CourseName";
+      nameParameter.Value = this.GetName();
+      cmd.Parameters.Add(nameParameter);
+
+      SqlParameter courseNumberParameter = new SqlParameter();
+      courseNumberParameter.ParameterName = "@CourseNumber";
+      courseNumberParameter.Value = this.GetCourseNumber();
+      cmd.Parameters.Add(courseNumberParameter);
+
+      rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        this.Id = rdr.GetInt32(0);
+      }
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+    }
+
     public static void DeleteAll()
     {
       SqlConnection conn = DB.Connection();
