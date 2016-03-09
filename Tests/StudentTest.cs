@@ -77,7 +77,7 @@ namespace Registrar
     {
       DateTime testDate = new DateTime(2016, 3, 10);
       Student testStudent = new Student("Wade Wilson", testDate);
-      testStudent.Save(); 
+      testStudent.Save();
 
       string newName = "Tony Stark";
       DateTime newDate = new DateTime(2016, 3, 15);
@@ -89,8 +89,8 @@ namespace Registrar
 
       Assert.Equal(newName, resultName);
       Assert.Equal(newDate, resultDate);
-
     }
+
 
     public void Dispose()
     {

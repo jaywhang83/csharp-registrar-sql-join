@@ -197,6 +197,64 @@ namespace Registrar
       }
     }
 
+    public void AddStudent(Student newStudent)
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("INSERT INTO students_courses (student_id, course_id) VALUES (@StudentId, @CourseId);", conn);
+      SqlParameter studentIdParameter = new SqlParameter();
+      studentIdParameter.ParameterName = "@StudentId";
+      studentIdParameter.Value = newStudent.GetId();
+      cmd.Parameters.Add(studentIdParameter);
+
+      SqlParameter courseIdParameter = new SqlParameter();
+      courseIdParameter.ParameterName = "@CourseId";
+      courseIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(courseIdParameter);
+
+      cmd.ExecuteNonQuery();
+
+      if(conn != null)
+      {
+        conn.Close();
+      }
+    }
+
+    public List<Student> GetStudents()
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr = null;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT students. * FROM courses JOIN students_courses ON (courses.id = students_courses.course_id) JOIN students ON (students_courses.student_id = students.id) WHERE courses.id = @CourseId;", conn);
+      SqlParameter courseIdParameter = new SqlParameter();
+      courseIdParameter.ParameterName = "@CourseId";
+      courseIdParameter.Value = this.GetId().ToString();
+      cmd.Parameters.Add(courseIdParameter);
+
+      rdr = cmd.ExecuteReader();
+
+      List<Student> students = new List<Student> {};
+      while(rdr.Read())
+      {
+        int studentId = rdr.GetInt32(0);
+        string studentName = rdr.GetString(1);
+        DateTime studentEnrollmentDate = rdr.GetDateTime(2);
+        Student newStudent = new Student(studentName, studentEnrollmentDate, studentId);
+        students.Add(newStudent);
+      }
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+      return students;
+    }
+
     public static void DeleteAll()
     {
       SqlConnection conn = DB.Connection();

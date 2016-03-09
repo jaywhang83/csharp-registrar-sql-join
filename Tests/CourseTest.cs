@@ -83,7 +83,50 @@ namespace Registrar
       string resultCourseNumber = testCourse.GetCourseNumber();
 
       Assert.Equal(newName, resultName);
-      Assert.Equal(newCourseNumber, resultCourseNumber); 
+      Assert.Equal(newCourseNumber, resultCourseNumber);
+    }
+
+    [Fact]
+    public void Test_AddStudent_AddsStudentToCourse()
+    {
+      Course testCourse = new Course("CS101 Intro to computer science", "CS101-2");
+      testCourse.Save();
+
+      DateTime testDate = new DateTime(2016, 3, 10);
+      Student testStudent1 = new Student("Wade Wilson", testDate);
+      testStudent1.Save();
+
+      Student testStudent2 = new Student("Tony Stark", testDate);
+      testStudent2.Save();
+
+      testCourse.AddStudent(testStudent1);
+      testCourse.AddStudent(testStudent2);
+
+      List<Student> result = testCourse.GetStudents();
+      List<Student> testList = new List<Student> {testStudent1, testStudent2};
+
+      Assert.Equal(testList, result);
+    }
+
+    public void Test_GetStudents_RturnsAllStudentsInCourse()
+    {
+      Course testCourse = new Course("CS161 Intro to object oriented programming", "CS161-2");
+      testCourse.Save();
+
+      DateTime testDate1 = new DateTime(2016, 3, 10);
+      Student testStudent1 = new Student("Wade Wilson", testDate1);
+      testStudent1.Save();
+
+      DateTime testDate2 = new DateTime(2016, 3, 15);
+      Student testStudent2 = new Student("Tony Stark", testDate2);
+      testStudent2.Save();
+
+      testCourse.AddStudent(testStudent2);
+
+      List<Student> result = testCourse.GetStudents();
+      List<Student> testList = new List<Student> {testStudent2};
+
+      Assert.Equal(testList, result);
     }
 
     public void Dispose()
