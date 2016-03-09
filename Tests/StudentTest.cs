@@ -91,6 +91,48 @@ namespace Registrar
       Assert.Equal(newDate, resultDate);
     }
 
+    [Fact]
+    public void Test_AddCourse_AddsCoureToStudent()
+    {
+      DateTime testDate = new DateTime(2016, 3, 10);
+      Student testStudent = new Student("Wade Wilson", testDate);
+      testStudent.Save();
+
+      Course testCourse1 = new Course("CS161 Intro to object oriented programming", "CS161-2");
+      testCourse1.Save();
+
+      Course testCourse2 = new Course("CS50 Intro to computer science", "CS161-2");
+      testCourse2.Save();
+
+      testStudent.AddCourse(testCourse1);
+      testStudent.AddCourse(testCourse2);
+
+      List<Course> result = testStudent.GetCourses();
+      List<Course> testList = new List<Course> {testCourse1, testCourse2};
+
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
+    public void Test__GetCourses_ReturnsAllCoursesForStudent()
+    {
+      DateTime testDate = new DateTime(2016, 3, 10);
+      Student testStudent = new Student("Wade Wilson", testDate);
+      testStudent.Save();
+
+      Course testCourse1 = new Course("CS161 Intro to object oriented programming", "CS161-2");
+      testCourse1.Save();
+
+      Course testCourse2 = new Course("CS50 Intro to computer science", "CS161-2");
+      testCourse2.Save();
+
+      testStudent.AddCourse(testCourse1);
+
+      List<Course> result = testStudent.GetCourses();
+      List<Course> testList = new List<Course> {testCourse1};
+
+      Assert.Equal(testList, result);
+    }
 
     public void Dispose()
     {

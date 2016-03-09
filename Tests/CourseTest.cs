@@ -108,7 +108,7 @@ namespace Registrar
       Assert.Equal(testList, result);
     }
 
-    public void Test_GetStudents_RturnsAllStudentsInCourse()
+    public void Test_GetStudents_ReturnsAllStudentsInCourse()
     {
       Course testCourse = new Course("CS161 Intro to object oriented programming", "CS161-2");
       testCourse.Save();
