@@ -74,7 +74,7 @@ namespace Registrar
       Course testCourse = new Course ("CS 101 Intro to Computer Schience", "CS101-2");
       testCourse.Save();
 
-      string newName = "CS161 Intro to Object Oriented Programming";
+      string newName = "CS162 Intro to Object Oriented Programming";
       string newCourseNumber = "CS161-3";
 
       testCourse.Update(newName, newCourseNumber);
@@ -110,7 +110,7 @@ namespace Registrar
 
     public void Test_GetStudents_ReturnsAllStudentsInCourse()
     {
-      Course testCourse = new Course("CS161 Intro to object oriented programming", "CS161-2");
+      Course testCourse = new Course("CS163 Intro to object oriented programming", "CS161-2");
       testCourse.Save();
 
       DateTime testDate1 = new DateTime(2016, 3, 10);
@@ -129,9 +129,30 @@ namespace Registrar
       Assert.Equal(testList, result);
     }
 
+    [Fact]
+    public void Test_Delete_DeletesCourseAssociationsFromDatabase()
+    {
+      Course testCourse = new Course("CS101 Intro to computer Science", "CS101-2");
+      testCourse.Save();
+
+      DateTime testDate = new DateTime(2016, 3, 10);
+      string testName = "Wade Wilson";
+      Student testStudent = new Student(testName, testDate);
+      testStudent.Save();
+
+      testCourse.AddStudent(testStudent);
+      testCourse.Delete();
+
+      List<Course> resultCourseList = testStudent.GetCourses();
+      List<Course> testList = new List<Course> {};
+
+      Assert.Equal(testList, resultCourseList);
+    }
+
     public void Dispose()
     {
       Course.DeleteAll();
+      Student.DeleteAll();
     }
   }
 }

@@ -108,6 +108,10 @@ namespace Registrar
       testStudent.AddCourse(testCourse2);
 
       List<Course> result = testStudent.GetCourses();
+      foreach(Course i in result)
+      {
+        Console.WriteLine(i.GetName());
+      }
       List<Course> testList = new List<Course> {testCourse1, testCourse2};
 
       Assert.Equal(testList, result);
@@ -120,7 +124,7 @@ namespace Registrar
       Student testStudent = new Student("Wade Wilson", testDate);
       testStudent.Save();
 
-      Course testCourse1 = new Course("CS161 Intro to object oriented programming", "CS161-2");
+      Course testCourse1 = new Course("CS162 Intro to object oriented programming", "CS161-2");
       testCourse1.Save();
 
       Course testCourse2 = new Course("CS50 Intro to computer science", "CS161-2");
@@ -134,9 +138,31 @@ namespace Registrar
       Assert.Equal(testList, result);
     }
 
+    [Fact]
+    public void Test_Delete_DeletesStudentAssociationsFromDatabase()
+    {
+      DateTime testDate = new DateTime(2016, 3, 10);
+      Student testStudent = new Student("Wade Wilson", testDate);
+      testStudent.Save();
+
+      string testName = "CS101 Intro to computer Science";
+      string testNumber = "CS101-2";
+      Course testCourse = new Course(testName, testNumber);
+      testCourse.Save();
+
+      testStudent.AddCourse(testCourse);
+      testStudent.Delete();
+
+      List<Student> resultStudentCourses = testCourse.GetStudents();
+      List<Student> testList = new List<Student> {};
+
+      Assert.Equal(resultStudentCourses, testList);
+    }
+
     public void Dispose()
     {
       Student.DeleteAll();
+      Course.DeleteAll();
     }
   }
 }
