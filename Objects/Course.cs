@@ -119,6 +119,84 @@ namespace Registrar
       }
     }
 
+    public static Course Find(int id)
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr = null;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM courses WHERE id = @CourseId;", conn);
+      SqlParameter courseIdParameter = new SqlParameter();
+      courseIdParameter.ParameterName = "@CourseId";
+      courseIdParameter.Value = id.ToString();
+      cmd.Parameters.Add(courseIdParameter);
+
+      rdr = cmd.ExecuteReader();
+
+      int foundCourseId = 0;
+      string foundCourseName = null;
+      string foundCourseNumber = null;
+
+      while(rdr.Read())
+      {
+        foundCourseId = rdr.GetInt32(0);
+        foundCourseName = rdr.GetString(1);
+        foundCourseNumber =rdr.GetString(2);
+      }
+      Course foundCourse = new Course(foundCourseName, foundCourseNumber, foundCourseId);
+
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+      return foundCourse;
+    }
+
+    public void Update(string newName, string newCourseNumber)
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("UPDATE courses SET name = @CourseName, course_number = @CourseNumber OUTPUT INSERTED.name, INSERTED.course_number WHERE id = @CourseId;", conn);
+
+      SqlParameter nameParameter = new SqlParameter();
+      nameParameter.ParameterName = "@CourseName";
+      nameParameter.Value = newName;
+      cmd.Parameters.Add(nameParameter);
+
+      SqlParameter numberParameter = new SqlParameter();
+      numberParameter.ParameterName = "@CourseNumber";
+      numberParameter.Value = newCourseNumber;
+      cmd.Parameters.Add(numberParameter);
+
+      SqlParameter courseIdParameter = new SqlParameter();
+      courseIdParameter.ParameterName = "@CourseId";
+      courseIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(courseIdParameter);
+
+      rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        this.Name = rdr.GetString(0);
+        this.CourseNumber = rdr.GetString(1);
+      }
+
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+    }
+
     public static void DeleteAll()
     {
       SqlConnection conn = DB.Connection();

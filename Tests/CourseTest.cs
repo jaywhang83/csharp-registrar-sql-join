@@ -54,7 +54,36 @@ namespace Registrar
       int result = savedCourse.GetId();
       int testId = testCourse.GetId();
 
-      Assert.Equal(result, testId);  
+      Assert.Equal(result, testId);
+    }
+
+    [Fact]
+    public void Test_Find_FindsCoruseInDatabase()
+    {
+      Course testCourse = new Course ("CS 101 Intro to Computer Schience", "CS101-2");
+      testCourse.Save();
+
+      Course foundCourse = Course.Find(testCourse.GetId());
+
+      Assert.Equal(testCourse, foundCourse);
+    }
+
+    [Fact]
+    public void Test_Update_UpdatesCourse()
+    {
+      Course testCourse = new Course ("CS 101 Intro to Computer Schience", "CS101-2");
+      testCourse.Save();
+
+      string newName = "CS161 Intro to Object Oriented Programming";
+      string newCourseNumber = "CS161-3";
+
+      testCourse.Update(newName, newCourseNumber);
+
+      string resultName = testCourse.GetName();
+      string resultCourseNumber = testCourse.GetCourseNumber();
+
+      Assert.Equal(newName, resultName);
+      Assert.Equal(newCourseNumber, resultCourseNumber); 
     }
 
     public void Dispose()
