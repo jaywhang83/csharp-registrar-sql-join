@@ -9,12 +9,14 @@ namespace Registrar
     private int Id;
     private string Name;
     private string CourseNumber;
+    private int DepartmentId;
 
-    public Course(string name, string courseNumber, int id = 0)
+    public Course(string name, string courseNumber, int departmentId, int id = 0)
     {
       Id = id;
       Name = name;
       CourseNumber = courseNumber;
+      DepartmentId = departmentId;
     }
 
     public int GetId()
@@ -29,6 +31,10 @@ namespace Registrar
     {
       return CourseNumber;
     }
+    public int GetDepartmentId()
+    {
+      return DepartmentId;
+    }
     public void SetName(string name)
     {
       Name = name;
@@ -36,6 +42,10 @@ namespace Registrar
     public void SetCourseNumber(string courseNumber)
     {
       CourseNumber = courseNumber;
+    }
+    public void SetDepartmentId(int departmentId)
+    {
+      DepartmentId = departmentId;
     }
 
     public override bool Equals(System.Object otherCourse)
@@ -50,7 +60,8 @@ namespace Registrar
         bool idEquality = this.GetId() == newCourse.GetId();
         bool nameEquality = this.GetName() == newCourse.GetName();
         bool courseNumberEquality = this.GetCourseNumber() == newCourse.GetCourseNumber();
-        return (idEquality && nameEquality && courseNumberEquality);
+        bool departmentIdEquality = this.GetDepartmentId() == newCourse.GetDepartmentId();
+        return (idEquality && nameEquality && courseNumberEquality && departmentIdEquality);
       }
     }
 
@@ -70,7 +81,8 @@ namespace Registrar
         int courseId = rdr.GetInt32(0);
         string courseName = rdr.GetString(1);
         string courseNumber = rdr.GetString(2);
-        Course newCourse = new Course(courseName, courseNumber, courseId);
+        int departmentId = rdr.GetInt32(3);
+        Course newCourse = new Course(courseName, courseNumber, departmentId, courseId);
         allCourses.Add(newCourse);
       }
 
@@ -91,7 +103,7 @@ namespace Registrar
       SqlDataReader rdr;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO courses (name, course_number) OUTPUT INSERTED.id VALUES (@CourseName, @CourseNumber);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO courses (name, course_number, department_id) OUTPUT INSERTED.id VALUES (@CourseName, @CourseNumber, @DepartmentId);", conn);
 
       SqlParameter nameParameter = new SqlParameter();
       nameParameter.ParameterName = "@CourseName";
@@ -102,6 +114,12 @@ namespace Registrar
       courseNumberParameter.ParameterName = "@CourseNumber";
       courseNumberParameter.Value = this.GetCourseNumber();
       cmd.Parameters.Add(courseNumberParameter);
+
+      SqlParameter departmentIDParameter = new SqlParameter();
+      departmentIDParameter.ParameterName = "@DepartmentID";
+      departmentIDParameter.Value = this.GetDepartmentId();
+      cmd.Parameters.Add(departmentIDParameter);
+
 
       rdr = cmd.ExecuteReader();
 
@@ -136,14 +154,16 @@ namespace Registrar
       int foundCourseId = 0;
       string foundCourseName = null;
       string foundCourseNumber = null;
+      int foundCourseDepartmentId = 0;
 
       while(rdr.Read())
       {
         foundCourseId = rdr.GetInt32(0);
         foundCourseName = rdr.GetString(1);
-        foundCourseNumber =rdr.GetString(2);
+        foundCourseNumber = rdr.GetString(2);
+        foundCourseDepartmentId = rdr.GetInt32(3);
       }
-      Course foundCourse = new Course(foundCourseName, foundCourseNumber, foundCourseId);
+      Course foundCourse = new Course(foundCourseName, foundCourseNumber, foundCourseDepartmentId, foundCourseId);
 
       if(rdr != null)
       {

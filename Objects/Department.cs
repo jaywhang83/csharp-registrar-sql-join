@@ -102,134 +102,135 @@ namespace Registrar
       }
     }
 
-    // public static Student Find(int id)
+    public static Department Find(int id)
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr = null;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM departments WHERE id = @DepartmentId;", conn);
+      SqlParameter departmentIdParameter = new SqlParameter();
+      departmentIdParameter.ParameterName = "@DepartmentId";
+      departmentIdParameter.Value = id.ToString();
+      cmd.Parameters.Add(departmentIdParameter);
+
+      rdr = cmd.ExecuteReader();
+
+      int foundDepartmentId = 0;
+      string foundDepartmentName = null;
+
+      while(rdr.Read())
+      {
+        foundDepartmentId = rdr.GetInt32(0);
+        foundDepartmentName = rdr.GetString(1);
+      }
+      Department foundDepartment = new Department(foundDepartmentName, foundDepartmentId);
+
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+      return foundDepartment;
+    }
+
+    public void Update(string newName)
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("UPDATE departments SET name = @DepartmentName OUTPUT INSERTED.name WHERE id = @DepartmentId;", conn);
+
+      SqlParameter nameParameter = new SqlParameter();
+      nameParameter.ParameterName = "@DepartmentName";
+      nameParameter.Value = newName;
+      cmd.Parameters.Add(nameParameter);
+
+      SqlParameter departmentIdParameter = new SqlParameter();
+      departmentIdParameter.ParameterName = "@DepartmentId";
+      departmentIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(departmentIdParameter);
+
+      rdr = cmd.ExecuteReader();
+
+      while(rdr.Read())
+      {
+        this.Name = rdr.GetString(0);
+      }
+
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+    }
+
+    // public void AddCourse(Course newCourse)
     // {
     //   SqlConnection conn = DB.Connection();
-    //   SqlDataReader rdr = null;
     //   conn.Open();
     //
-    //   SqlCommand cmd = new SqlCommand("SELECT * FROM departments WHERE id = @DepartmentId;", conn);
-    //   SqlParameter departmentIdParameter = new SqlParameter();
-    //   departmentIdParameter.ParameterName = "@DepartmentId";
-    //   departmentIdParameter.Value = id.ToString();
-    //   cmd.Parameters.Add(departmentIdParameter);
+    //   SqlCommand cmd = new SqlCommand("INSERT INTO students_courses (student_id, course_id) VALUES (@StudentId, @CourseId);", conn);
+    //   SqlParameter studentIdParameter = new SqlParameter();
+    //   studentIdParameter.ParameterName = "@StudentId";
+    //   studentIdParameter.Value = this.GetId();
+    //   cmd.Parameters.Add(studentIdParameter);
     //
-    //   rdr = cmd.ExecuteReader();
+    //   SqlParameter courseIdParameter = new SqlParameter();
+    //   courseIdParameter.ParameterName = "@CourseId";
+    //   courseIdParameter.Value = newCourse.GetId();
+    //   cmd.Parameters.Add(courseIdParameter);
     //
-    //   int foundDepartmentId = 0;
-    //   string foundDepartmentName = null;
+    //   cmd.ExecuteNonQuery();
     //
-    //   while(rdr.Read())
-    //   {
-    //     foundDepartmentId = rdr.GetInt32(0);
-    //     foundDepartmentName = rdr.GetString(1);
-    //   }
-    //   Student foundDepartment = new Department(foundDepartmentName, foundDepartmentId);
-    //
-    //   if(rdr != null)
-    //   {
-    //     rdr.Close();
-    //   }
     //   if(conn != null)
     //   {
     //     conn.Close();
     //   }
-    //   return foundDepartment;
     // }
-    //
-    // public void Update(string newName)
-    // {
-    //   SqlConnection conn = DB.Connection();
-    //   SqlDataReader rdr;
-    //   conn.Open();
-    //
-    //   SqlCommand cmd = new SqlCommand("UPDATE departments SET name = @DepartmentName OUTPUT INSERTED.name WHERE id = @DepartmentId;", conn);
-    //
-    //   SqlParameter nameParameter = new SqlParameter();
-    //   nameParameter.ParameterName = "@DepartmentName";
-    //   nameParameter.Value = newName;
-    //   cmd.Parameters.Add(nameParameter);
-    //
-    //   SqlParameter departmentIdParameter = new SqlParameter();
-    //   departmentIdParameter.ParameterName = "@DepartmentId";
-    //   departmentIdParameter.Value = this.GetId();
-    //   cmd.Parameters.Add(departmentIdParameter);
-    //
-    //   rdr = cmd.ExecuteReader();
-    //
-    //   while(rdr.Read())
-    //   {
-    //     this.Name = rdr.GetString(0);
-    //   }
-    //
-    //   if(rdr != null)
-    //   {
-    //     rdr.Close();
-    //   }
-    //   if(conn != null)
-    //   {
-    //     conn.Close();
-    //   }
-    // }
-    // //
-    // // public void AddCourse(Course newCourse)
-    // // {
-    // //   SqlConnection conn = DB.Connection();
-    // //   conn.Open();
-    // //
-    // //   SqlCommand cmd = new SqlCommand("INSERT INTO students_courses (student_id, course_id) VALUES (@StudentId, @CourseId);", conn);
-    // //   SqlParameter studentIdParameter = new SqlParameter();
-    // //   studentIdParameter.ParameterName = "@StudentId";
-    // //   studentIdParameter.Value = this.GetId();
-    // //   cmd.Parameters.Add(studentIdParameter);
-    // //
-    // //   SqlParameter courseIdParameter = new SqlParameter();
-    // //   courseIdParameter.ParameterName = "@CourseId";
-    // //   courseIdParameter.Value = newCourse.GetId();
-    // //   cmd.Parameters.Add(courseIdParameter);
-    // //
-    // //   cmd.ExecuteNonQuery();
-    // //
-    // //   if(conn != null)
-    // //   {
-    // //     conn.Close();
-    // //   }
-    // // }
-    //
-    // public List<Course> GetCourses()
-    // {
-    //   SqlConnection conn = DB.Connection();
-    //   SqlDataReader rdr = null;
-    //   conn.Open();
-    //
-    //   SqlCommand cmd = new SqlCommand("SELECT * FROM courses WHERE department_id = @DepartmentId", conn);
-    //   SqlParameter departmentIdParameter = new SqlParameter();
-    //   departmentIdParameter.ParameterName = "@DepartmentId";
-    //   departmentIdParameter.Value = this.GetId();
-    //   cmd.Parameters.Add(departmentIdParameter);
-    //
-    //   rdr = cmd.ExecuteReader();
-    //   List<Course> courses = new List<Course> {};
-    //   while(rdr.Read())
-    //   {
-    //     int courseId = rdr.GetInt32(0);
-    //     string courseName = rdr.GetString(1);
-    //     string courseNumber = rdr.GetString(2);
-    //     Course newCourse = new Course(courseName, courseNumber, courseId);
-    //     courses.Add(newCourse);
-    //   }
-    //
-    //   if(rdr != null)
-    //   {
-    //     rdr.Close();
-    //   }
-    //   if(conn != null)
-    //   {
-    //     conn.Close();
-    //   }
-    //   return courses;
-    // }
-    //
+
+    public List<Course> GetCourses()
+    {
+      SqlConnection conn = DB.Connection();
+      SqlDataReader rdr = null;
+      conn.Open();
+
+      SqlCommand cmd = new SqlCommand("SELECT * FROM courses WHERE department_id = @DepartmentId", conn);
+      SqlParameter departmentIdParameter = new SqlParameter();
+      departmentIdParameter.ParameterName = "@DepartmentId";
+      departmentIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(departmentIdParameter);
+
+      rdr = cmd.ExecuteReader();
+      List<Course> courses = new List<Course> {};
+      while(rdr.Read())
+      {
+        int courseId = rdr.GetInt32(0);
+        string courseName = rdr.GetString(1);
+        string courseNumber = rdr.GetString(2);
+        int courseDepartmentId = rdr.GetInt32(3);
+        Course newCourse = new Course(courseName, courseNumber, courseDepartmentId, courseId);
+        courses.Add(newCourse);
+      }
+
+      if(rdr != null)
+      {
+        rdr.Close();
+      }
+      if(conn != null)
+      {
+        conn.Close();
+      }
+      return courses;
+    }
+
     // public List<Student> GetStudents()
     // {
     //   SqlConnection conn = DB.Connection();
@@ -284,12 +285,12 @@ namespace Registrar
     // //   }
     // // }
     //
-    // public static void DeleteAll()
-    // {
-    //   SqlConnection conn = DB.Connection();
-    //   conn.Open();
-    //   SqlCommand cmd = new SqlCommand("DELETE FROM departments;", conn);
-    //   cmd.ExecuteNonQuery();
-    // }
+    public static void DeleteAll()
+    {
+      SqlConnection conn = DB.Connection();
+      conn.Open();
+      SqlCommand cmd = new SqlCommand("DELETE FROM departments;", conn);
+      cmd.ExecuteNonQuery();
+    }
   }
 }

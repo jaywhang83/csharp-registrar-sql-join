@@ -9,12 +9,14 @@ namespace Registrar
     private int Id;
     private string Name;
     private DateTime EnrollmentDate;
+    int DepartmentId;
 
-    public Student(string name, DateTime enrollmentDate, int id = 0)
+    public Student(string name, DateTime enrollmentDate, int departmentId, int id = 0)
     {
       Id = id;
       Name = name;
       EnrollmentDate = enrollmentDate;
+      DepartmentId = departmentId;
     }
 
     public int GetId()
@@ -29,6 +31,10 @@ namespace Registrar
     {
       return EnrollmentDate;
     }
+    public int GetDepartmentId()
+    {
+      return DepartmentId;
+    }
     public void SetName(string newName)
     {
       Name = newName;
@@ -36,6 +42,10 @@ namespace Registrar
     public void SetEnrollmentDate(DateTime date)
     {
       EnrollmentDate = date;
+    }
+    public void SetDepartmentId(int departmentId)
+    {
+      DepartmentId = departmentId;
     }
 
     public override bool Equals(System.Object otherStudent)
@@ -50,7 +60,8 @@ namespace Registrar
         bool idEquality = this.GetId() == newStudent.GetId();
         bool nameEquality = this.GetName() == newStudent.GetName();
         bool dateEquality = this.GetEnrollmentDate() == newStudent.GetEnrollmentDate();
-        return (idEquality && nameEquality && dateEquality);
+        bool departmentIdEquality = this.GetDepartmentId() == newStudent.GetDepartmentId();
+        return (idEquality && nameEquality && dateEquality && departmentIdEquality);
       }
     }
 
@@ -70,7 +81,8 @@ namespace Registrar
         int studentId = rdr.GetInt32(0);
         string studentName = rdr.GetString(1);
         DateTime studentEnrollmentDate = rdr.GetDateTime(2);
-        Student newStudent = new Student(studentName, studentEnrollmentDate, studentId);
+        int departmentId = rdr.GetInt32(3);
+        Student newStudent = new Student(studentName, studentEnrollmentDate, departmentId , studentId);
         allStudents.Add(newStudent);
       }
       if(rdr != null)
@@ -90,7 +102,7 @@ namespace Registrar
       SqlDataReader rdr;
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("INSERT INTO students (name, enrollment_date) OUTPUT INSERTED.id VALUES (@StudentName, @StudentEnrollmentDate);", conn);
+      SqlCommand cmd = new SqlCommand("INSERT INTO students (name, enrollment_date, department_id) OUTPUT INSERTED.id VALUES (@StudentName, @StudentEnrollmentDate, @DepartmentId);", conn);
 
       SqlParameter nameParameter = new SqlParameter();
       nameParameter.ParameterName = "@StudentName";
@@ -101,6 +113,11 @@ namespace Registrar
       dateParameter.ParameterName = "@StudentEnrollmentDate";
       dateParameter.Value = this.GetEnrollmentDate();
       cmd.Parameters.Add(dateParameter);
+
+      SqlParameter departmentIDParameter = new SqlParameter();
+      departmentIDParameter.ParameterName = "@DepartmentID";
+      departmentIDParameter.Value = this.GetDepartmentId();
+      cmd.Parameters.Add(departmentIDParameter);
 
       rdr = cmd.ExecuteReader();
 
@@ -135,14 +152,16 @@ namespace Registrar
       int foundStudentId = 0;
       string foundStudentName = null;
       DateTime foundDate = new DateTime();
+      int foundStudentDepartmentId = 0;
 
       while(rdr.Read())
       {
         foundStudentId = rdr.GetInt32(0);
         foundStudentName = rdr.GetString(1);
         foundDate = rdr.GetDateTime(2);
+        foundStudentDepartmentId = rdr.GetInt32(3);
       }
-      Student foundStudent = new Student(foundStudentName, foundDate, foundStudentId);
+      Student foundStudent = new Student(foundStudentName, foundDate, foundStudentDepartmentId, foundStudentId);
 
       if(rdr != null)
       {

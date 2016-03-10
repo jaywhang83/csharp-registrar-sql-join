@@ -24,8 +24,8 @@ namespace Registrar
     [Fact]
     public void Test_Equal_overrideTrueForSameDescription()
     {
-      Course testCourse1 = new Course("CS 101 Intro to Computer Schience", "CS101-2");
-      Course testCourse2 = new Course("CS 101 Intro to Computer Schience", "CS101-2");
+      Course testCourse1 = new Course("CS 101 Intro to Computer Schience", "CS101-2", 1);
+      Course testCourse2 = new Course("CS 101 Intro to Computer Schience", "CS101-2", 1);
 
       Assert.Equal(testCourse1, testCourse2);
     }
@@ -33,7 +33,7 @@ namespace Registrar
     [Fact]
     public void Test_Save()
     {
-      Course testCourse = new Course("CS 101 Intro to Computer Schience", "CS101-2");
+      Course testCourse = new Course("CS 101 Intro to Computer Schience", "CS101-2", 1);
       testCourse.Save();
 
       List<Course> result = Course.GetAll();
@@ -45,7 +45,7 @@ namespace Registrar
     [Fact]
     public void Test_Save_AssignsIdToOBject()
     {
-      Course testCourse = new Course("CS 101 Intro to Computer Schience", "CS101-2");
+      Course testCourse = new Course("CS 101 Intro to Computer Schience", "CS101-2", 1);
 
       testCourse.Save();
 
@@ -60,7 +60,7 @@ namespace Registrar
     [Fact]
     public void Test_Find_FindsCoruseInDatabase()
     {
-      Course testCourse = new Course ("CS 101 Intro to Computer Schience", "CS101-2");
+      Course testCourse = new Course ("CS 101 Intro to Computer Schience", "CS101-2", 1);
       testCourse.Save();
 
       Course foundCourse = Course.Find(testCourse.GetId());
@@ -71,7 +71,7 @@ namespace Registrar
     [Fact]
     public void Test_Update_UpdatesCourse()
     {
-      Course testCourse = new Course ("CS 101 Intro to Computer Schience", "CS101-2");
+      Course testCourse = new Course ("CS 101 Intro to Computer Schience", "CS101-2", 1);
       testCourse.Save();
 
       string newName = "CS162 Intro to Object Oriented Programming";
@@ -89,14 +89,17 @@ namespace Registrar
     [Fact]
     public void Test_AddStudent_AddsStudentToCourse()
     {
-      Course testCourse = new Course("CS101 Intro to computer science", "CS101-2");
+      Department testDepartment = new Department("Accounting");
+      testDepartment.Save();
+
+      Course testCourse = new Course("CS101 Intro to computer science", "CS101-2", testDepartment.GetId());
       testCourse.Save();
 
       DateTime testDate = new DateTime(2016, 3, 10);
-      Student testStudent1 = new Student("Wade Wilson", testDate);
+      Student testStudent1 = new Student("Wade Wilson", testDate, testDepartment.GetId());
       testStudent1.Save();
 
-      Student testStudent2 = new Student("Tony Stark", testDate);
+      Student testStudent2 = new Student("Tony Stark", testDate, testDepartment.GetId());
       testStudent2.Save();
 
       testCourse.AddStudent(testStudent1);
@@ -110,15 +113,15 @@ namespace Registrar
 
     public void Test_GetStudents_ReturnsAllStudentsInCourse()
     {
-      Course testCourse = new Course("CS163 Intro to object oriented programming", "CS161-2");
+      Course testCourse = new Course("CS163 Intro to object oriented programming", "CS161-2", 1);
       testCourse.Save();
 
       DateTime testDate1 = new DateTime(2016, 3, 10);
-      Student testStudent1 = new Student("Wade Wilson", testDate1);
+      Student testStudent1 = new Student("Wade Wilson", testDate1, 1);
       testStudent1.Save();
 
       DateTime testDate2 = new DateTime(2016, 3, 15);
-      Student testStudent2 = new Student("Tony Stark", testDate2);
+      Student testStudent2 = new Student("Tony Stark", testDate2, 1);
       testStudent2.Save();
 
       testCourse.AddStudent(testStudent2);
@@ -132,12 +135,13 @@ namespace Registrar
     [Fact]
     public void Test_Delete_DeletesCourseAssociationsFromDatabase()
     {
-      Course testCourse = new Course("CS101 Intro to computer Science", "CS101-2");
+      Department testDepartment = new Department("Accounting");
+      Course testCourse = new Course("CS101 Intro to computer Science", "CS101-2", 1);
       testCourse.Save();
 
       DateTime testDate = new DateTime(2016, 3, 10);
       string testName = "Wade Wilson";
-      Student testStudent = new Student(testName, testDate);
+      Student testStudent = new Student(testName, testDate, testDepartment.GetId());
       testStudent.Save();
 
       testCourse.AddStudent(testStudent);
@@ -153,6 +157,7 @@ namespace Registrar
     {
       Course.DeleteAll();
       Student.DeleteAll();
+      Department.DeleteAll();
     }
   }
 }
