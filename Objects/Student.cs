@@ -258,7 +258,8 @@ namespace Registrar
         int courseId = rdr.GetInt32(0);
         string courseName = rdr.GetString(1);
         string courseNumber = rdr.GetString(2);
-        Course newCourse = new Course(courseName, courseNumber, courseId);
+        int courseDepartmentId = rdr.GetInt32(3);
+        Course newCourse = new Course(courseName, courseNumber, courseDepartmentId, courseId);
         courses.Add(newCourse);
       }
 

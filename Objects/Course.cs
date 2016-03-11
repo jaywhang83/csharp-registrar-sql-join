@@ -261,7 +261,8 @@ namespace Registrar
         int studentId = rdr.GetInt32(0);
         string studentName = rdr.GetString(1);
         DateTime studentEnrollmentDate = rdr.GetDateTime(2);
-        Student newStudent = new Student(studentName, studentEnrollmentDate, studentId);
+        int studentDepartmentID = rdr.GetInt32(3);
+        Student newStudent = new Student(studentName, studentEnrollmentDate, studentDepartmentID, studentId);
         students.Add(newStudent);
       }
       if(rdr != null)
